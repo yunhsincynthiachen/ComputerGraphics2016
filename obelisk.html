@@ -1,0 +1,152 @@
+
+<html>
+  <head>
+    <title>Obelisk</title>
+    <style>
+
+      canvas {
+          display: block;
+          margin: 10px auto;
+          width: 100%;
+          height: 500px;
+      }
+    </style>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/dat.gui.min.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/three.min.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
+  </head>
+<body>
+
+<h1>Obelisk</h1>
+
+<div id="WebGL-output">
+</div>
+
+<script>
+// ====================================================================
+var scene = new THREE.Scene();
+
+var renderer = new THREE.WebGLRenderer();
+
+var sceneParams = {
+    baseWidth: 55,
+    topWidth: 34,
+    mainHeight: 500,
+    topHeight: 55
+};
+
+function clearScene() {
+  var selectedObject = scene.getObjectByName("obeliskMesh");
+  console.log(selectedObject);
+  scene.remove( selectedObject );
+}
+
+function createBody(baseWidth, topWidth, mainHeight, topHeight) {
+    var geom = new THREE.Geometry();
+
+    // add the front
+    geom.vertices.push(new THREE.Vector3(0, 0, 0));
+    geom.vertices.push(new THREE.Vector3(baseWidth, 0, 0));
+    geom.vertices.push(new THREE.Vector3(baseWidth*0.5+topWidth*0.5, mainHeight, -(baseWidth*0.5-topWidth*0.5)));
+    geom.vertices.push(new THREE.Vector3(baseWidth*0.5-topWidth*0.5, mainHeight, -(baseWidth*0.5-topWidth*0.5)));
+
+    //add the back
+    geom.vertices.push(new THREE.Vector3(0, 0, -baseWidth));
+    geom.vertices.push(new THREE.Vector3(baseWidth, 0, -baseWidth));
+    geom.vertices.push(new THREE.Vector3(baseWidth*0.5+topWidth*0.5, mainHeight, -(baseWidth*0.5+topWidth*0.5)));
+    geom.vertices.push(new THREE.Vector3(baseWidth*0.5-topWidth*0.5, mainHeight, -(baseWidth*0.5+topWidth*0.5)));
+
+    //add the tip
+    geom.vertices.push(new THREE.Vector3(0.5*baseWidth, mainHeight+topHeight, -0.5*baseWidth));
+
+    // faces
+    geom.faces.push(new THREE.Face3(0, 1, 2));//front
+    geom.faces.push(new THREE.Face3(2, 3, 0));
+
+    geom.faces.push(new THREE.Face3(4, 6, 5));//back
+    geom.faces.push(new THREE.Face3(4, 7, 6));
+
+    geom.faces.push(new THREE.Face3(1, 5, 6));//side
+    geom.faces.push(new THREE.Face3(1, 6, 2));
+
+    geom.faces.push(new THREE.Face3(0, 3, 7));//side
+    geom.faces.push(new THREE.Face3(7, 4, 0));
+
+    geom.faces.push(new THREE.Face3(7, 2, 6));//top
+    geom.faces.push(new THREE.Face3(7, 3, 2));
+
+    //tips
+    geom.faces.push(new THREE.Face3(2, 6, 8));
+    geom.faces.push(new THREE.Face3(3, 2, 8));
+    geom.faces.push(new THREE.Face3(3, 8, 7));
+    geom.faces.push(new THREE.Face3(7, 8, 6));
+
+
+    // calculate the normals for shading
+    geom.computeFaceNormals();
+    geom.computeVertexNormals(true);
+
+    return geom;
+}
+
+function drawObelisk() {
+
+  var steepleMaterials = [];
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.lightcoral}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: new THREE.Color("rgb(102, 205, 170)")})); //aquamarine
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: new TW.randomColor}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.mistyrose}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: new THREE.Color("rgb(188, 143, 143)")})); //rosy brown
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.yellowgreen}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.crimson}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.orange}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.thistle}));
+
+  var steeple1geom = createBody(sceneParams.baseWidth, sceneParams.topWidth, sceneParams.mainHeight, sceneParams.topHeight);
+
+  TW.setMaterialForFaces(steeple1geom, 0,0,1);
+  TW.setMaterialForFaces(steeple1geom, 1,2,3);
+  TW.setMaterialForFaces(steeple1geom, 2,4,5);
+  TW.setMaterialForFaces(steeple1geom, 3,6,7);
+  TW.setMaterialForFaces(steeple1geom, 4,8,9);
+  TW.setMaterialForFaces(steeple1geom, 5,10);
+  TW.setMaterialForFaces(steeple1geom, 6,11);
+  TW.setMaterialForFaces(steeple1geom, 7,12);
+  TW.setMaterialForFaces(steeple1geom, 8,13);
+
+  var faceMaterial = new THREE.MeshFaceMaterial(steepleMaterials);;
+
+  var steeple1mesh = new THREE.Mesh(steeple1geom, faceMaterial);
+  steeple1mesh.name = "obeliskMesh";
+  steeple1mesh.position.set(-sceneParams.baseWidth/2,0,sceneParams.baseWidth/2);
+  scene.add(steeple1mesh);
+
+  TW.mainInit(renderer, scene);
+  TW.cameraSetup(renderer,
+                 scene,
+                 {minx: -sceneParams.baseWidth/2, maxx: sceneParams.baseWidth/2,
+                  miny: 0, maxy: sceneParams.topHeight+sceneParams.mainHeight,
+                  minz: -sceneParams.baseWidth/2, maxz: sceneParams.baseWidth/2});
+}
+
+drawObelisk();
+
+function redrawObelisk() {
+    clearScene();
+    drawObelisk();
+
+}
+
+</script>
+
+<script id="buildGUI">
+var gui = new dat.GUI();
+   gui.add(sceneParams, 'baseWidth',0,100).onChange(redrawObelisk);
+   gui.add(sceneParams, 'topWidth',0,100).onChange(redrawObelisk);
+   gui.add(sceneParams, 'mainHeight',0,1000).onChange(redrawObelisk);
+   gui.add(sceneParams, 'topHeight',0,100).onChange(redrawObelisk);
+</script>
+
+</body>
+</html>
