@@ -1,26 +1,3 @@
-
-<html>
-  <head>
-    <title>Obelisk</title>
-    <style>
-
-      canvas {
-          display: block;
-          margin: 10px auto;
-          width: 100%;
-          height: 500px;
-      }
-    </style>
-    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/dat.gui.min.js"></script>
-    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/three.min.js"></script>
-    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
-  </head>
-<body>
-
-<h1>Obelisk</h1>
-
-<script>
-
 // ====================================================================
 //Initializes scene and renderer
 var scene = new THREE.Scene();
@@ -136,29 +113,22 @@ function drawObelisk() {
 
   //initializes and sets up camera, scene, renderer, boundingBox
   TW.mainInit(renderer, scene);
+  document.getElementById('obelisk').appendChild(renderer.domElement);
   TW.cameraSetup(renderer, scene, boundingBox);
 }
 
-
-drawObelisk(); //initial call of drawing the original obelisk
+function firstDrawObelisk() {
+  drawObelisk();
+  //creates a gui that allows the changing of the scene parameters
+  var gui = new dat.GUI();
+     gui.add(sceneParams, 'baseWidth',0,100).onChange(redrawObelisk);
+     gui.add(sceneParams, 'topWidth',0,100).onChange(redrawObelisk);
+     gui.add(sceneParams, 'mainHeight',0,1000).onChange(redrawObelisk);
+     gui.add(sceneParams, 'topHeight',0,100).onChange(redrawObelisk);
+}
 
 //redrawObelisk: gets called when gui is changed and sceneParams
 function redrawObelisk() {
     clearScene();
     drawObelisk();
 }
-
-</script>
-
-<script id="buildGUI">
-//creates a gui that allows the changing of the scene parameters
-var gui = new dat.GUI();
-   gui.add(sceneParams, 'baseWidth',0,100).onChange(redrawObelisk);
-   gui.add(sceneParams, 'topWidth',0,100).onChange(redrawObelisk);
-   gui.add(sceneParams, 'mainHeight',0,1000).onChange(redrawObelisk);
-   gui.add(sceneParams, 'topHeight',0,100).onChange(redrawObelisk);
-
-</script>
-
-</body>
-</html>
