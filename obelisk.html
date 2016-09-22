@@ -13,22 +13,20 @@
     </style>
     <script src="https://cs.wellesley.edu/~cs307/threejs/libs/dat.gui.min.js"></script>
     <script src="https://cs.wellesley.edu/~cs307/threejs/libs/three.min.js"></script>
-    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js"></script>
     <script src="https://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
   </head>
 <body>
 
 <h1>Obelisk</h1>
 
-<div id="WebGL-output">
-</div>
-
 <script>
-// ====================================================================
-var scene = new THREE.Scene();
 
+// ====================================================================
+//Initializes scene and renderer
+var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer();
 
+//Default sceneParams for the obelisk
 var sceneParams = {
     baseWidth: 55,
     topWidth: 34,
@@ -36,47 +34,48 @@ var sceneParams = {
     topHeight: 55
 };
 
+//clearScene: removes the obeliskMesh object from the scene;
 function clearScene() {
   var selectedObject = scene.getObjectByName("obeliskMesh");
-  console.log(selectedObject);
-  scene.remove( selectedObject );
+  scene.remove(selectedObject);
 }
 
+//createBody: creates the geometry of the obelisk
 function createBody(baseWidth, topWidth, mainHeight, topHeight) {
     var geom = new THREE.Geometry();
 
-    // add the front
+    // add the front vertices
     geom.vertices.push(new THREE.Vector3(0, 0, 0));
     geom.vertices.push(new THREE.Vector3(baseWidth, 0, 0));
     geom.vertices.push(new THREE.Vector3(baseWidth*0.5+topWidth*0.5, mainHeight, -(baseWidth*0.5-topWidth*0.5)));
     geom.vertices.push(new THREE.Vector3(baseWidth*0.5-topWidth*0.5, mainHeight, -(baseWidth*0.5-topWidth*0.5)));
 
-    //add the back
+    //add the back vertices
     geom.vertices.push(new THREE.Vector3(0, 0, -baseWidth));
     geom.vertices.push(new THREE.Vector3(baseWidth, 0, -baseWidth));
     geom.vertices.push(new THREE.Vector3(baseWidth*0.5+topWidth*0.5, mainHeight, -(baseWidth*0.5+topWidth*0.5)));
     geom.vertices.push(new THREE.Vector3(baseWidth*0.5-topWidth*0.5, mainHeight, -(baseWidth*0.5+topWidth*0.5)));
 
-    //add the tip
+    //add the tip vertex
     geom.vertices.push(new THREE.Vector3(0.5*baseWidth, mainHeight+topHeight, -0.5*baseWidth));
 
-    // faces
+    //All of the faces
     geom.faces.push(new THREE.Face3(0, 1, 2));//front
     geom.faces.push(new THREE.Face3(2, 3, 0));
 
     geom.faces.push(new THREE.Face3(4, 6, 5));//back
     geom.faces.push(new THREE.Face3(4, 7, 6));
 
-    geom.faces.push(new THREE.Face3(1, 5, 6));//side
+    geom.faces.push(new THREE.Face3(1, 5, 6));//side right
     geom.faces.push(new THREE.Face3(1, 6, 2));
 
-    geom.faces.push(new THREE.Face3(0, 3, 7));//side
+    geom.faces.push(new THREE.Face3(0, 3, 7));//side left
     geom.faces.push(new THREE.Face3(7, 4, 0));
 
-    geom.faces.push(new THREE.Face3(7, 2, 6));//top
+    geom.faces.push(new THREE.Face3(7, 2, 6));//top face
     geom.faces.push(new THREE.Face3(7, 3, 2));
 
-    //tips
+    //top pyramid faces
     geom.faces.push(new THREE.Face3(2, 6, 8));
     geom.faces.push(new THREE.Face3(3, 2, 8));
     geom.faces.push(new THREE.Face3(3, 8, 7));
@@ -90,12 +89,13 @@ function createBody(baseWidth, topWidth, mainHeight, topHeight) {
     return geom;
 }
 
+//drawObelisk: draws obelisk with
 function drawObelisk() {
 
-  var steepleMaterials = [];
+  var steepleMaterials = []; //array of meshbasicmaterials for all of the faces
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.lightcoral}));
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: new THREE.Color("rgb(102, 205, 170)")})); //aquamarine
-  steepleMaterials.push(new THREE.MeshBasicMaterial({color: new TW.randomColor}));
+  steepleMaterials.push(new THREE.MeshBasicMaterial({color: new TW.randomColor})); //random color
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.mistyrose}));
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: new THREE.Color("rgb(188, 143, 143)")})); //rosy brown
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.yellowgreen}));
@@ -103,49 +103,61 @@ function drawObelisk() {
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.orange}));
   steepleMaterials.push(new THREE.MeshBasicMaterial({color: THREE.ColorKeywords.thistle}));
 
-  var steeple1geom = createBody(sceneParams.baseWidth, sceneParams.topWidth, sceneParams.mainHeight, sceneParams.topHeight);
+  //create the obeliskgeom
+  var obeliskgeom = createBody(sceneParams.baseWidth, sceneParams.topWidth, sceneParams.mainHeight, sceneParams.topHeight);
 
-  TW.setMaterialForFaces(steeple1geom, 0,0,1);
-  TW.setMaterialForFaces(steeple1geom, 1,2,3);
-  TW.setMaterialForFaces(steeple1geom, 2,4,5);
-  TW.setMaterialForFaces(steeple1geom, 3,6,7);
-  TW.setMaterialForFaces(steeple1geom, 4,8,9);
-  TW.setMaterialForFaces(steeple1geom, 5,10);
-  TW.setMaterialForFaces(steeple1geom, 6,11);
-  TW.setMaterialForFaces(steeple1geom, 7,12);
-  TW.setMaterialForFaces(steeple1geom, 8,13);
+  //sets material for 9 faces
+  TW.setMaterialForFaces(obeliskgeom, 0,0,1);
+  TW.setMaterialForFaces(obeliskgeom, 1,2,3);
+  TW.setMaterialForFaces(obeliskgeom, 2,4,5);
+  TW.setMaterialForFaces(obeliskgeom, 3,6,7);
+  TW.setMaterialForFaces(obeliskgeom, 4,8,9);
+  TW.setMaterialForFaces(obeliskgeom, 5,10);
+  TW.setMaterialForFaces(obeliskgeom, 6,11);
+  TW.setMaterialForFaces(obeliskgeom, 7,12);
+  TW.setMaterialForFaces(obeliskgeom, 8,13);
 
-  var faceMaterial = new THREE.MeshFaceMaterial(steepleMaterials);;
+  var faceMaterial = new THREE.MeshFaceMaterial(steepleMaterials); //sets face material to the steeplematerials
 
-  var steeple1mesh = new THREE.Mesh(steeple1geom, faceMaterial);
-  steeple1mesh.name = "obeliskMesh";
-  steeple1mesh.position.set(-sceneParams.baseWidth/2,0,sceneParams.baseWidth/2);
-  scene.add(steeple1mesh);
+  var obeliskmesh = new THREE.Mesh(obeliskgeom, faceMaterial); //creates mesh with the face material and geometry
+  obeliskmesh.name = "obeliskMesh"; //sets name to obeliskmesh
+  obeliskmesh.position.set(-sceneParams.baseWidth/2,0,sceneParams.baseWidth/2); //the origin of the monument is at the center of the base, directly below the peak
+  scene.add(obeliskmesh); //add obelisk to scene
 
+  //sets bounding box location
+  var boundingBox = {
+    minx: -sceneParams.baseWidth/2,
+    maxx: sceneParams.baseWidth/2,
+    miny: 0,
+    maxy: sceneParams.topHeight+sceneParams.mainHeight,
+    minz: -sceneParams.baseWidth/2,
+    maxz: sceneParams.baseWidth/2
+ };
+
+  //initializes and sets up camera, scene, renderer, boundingBox
   TW.mainInit(renderer, scene);
-  TW.cameraSetup(renderer,
-                 scene,
-                 {minx: -sceneParams.baseWidth/2, maxx: sceneParams.baseWidth/2,
-                  miny: 0, maxy: sceneParams.topHeight+sceneParams.mainHeight,
-                  minz: -sceneParams.baseWidth/2, maxz: sceneParams.baseWidth/2});
+  TW.cameraSetup(renderer, scene, boundingBox);
 }
 
-drawObelisk();
 
+drawObelisk(); //initial call of drawing the original obelisk
+
+//redrawObelisk: gets called when gui is changed and sceneParams
 function redrawObelisk() {
     clearScene();
     drawObelisk();
-
 }
 
 </script>
 
 <script id="buildGUI">
+//creates a gui that allows the changing of the scene parameters
 var gui = new dat.GUI();
    gui.add(sceneParams, 'baseWidth',0,100).onChange(redrawObelisk);
    gui.add(sceneParams, 'topWidth',0,100).onChange(redrawObelisk);
    gui.add(sceneParams, 'mainHeight',0,1000).onChange(redrawObelisk);
    gui.add(sceneParams, 'topHeight',0,100).onChange(redrawObelisk);
+
 </script>
 
 </body>
