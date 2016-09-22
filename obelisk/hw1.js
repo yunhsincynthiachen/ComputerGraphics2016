@@ -117,6 +117,7 @@ function drawObelisk() {
   TW.cameraSetup(renderer, scene, boundingBox);
 }
 
+//firstDrawObelisk: the initial drawing function 
 function firstDrawObelisk() {
   drawObelisk();
   //creates a gui that allows the changing of the scene parameters
