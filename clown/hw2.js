@@ -3,6 +3,7 @@
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer();
 
+//Set different colors for different parts of the clown
 var materials = {
   bodyMaterial: new THREE.MeshBasicMaterial({color: 0x457650}),
   legMaterial: new THREE.MeshBasicMaterial({color: 0xFF0000}),
@@ -13,34 +14,43 @@ var materials = {
   mouthMaterial: new THREE.MeshBasicMaterial({color: 0xd24399}),
 };
 
+//List of sides
+var leftRight = [1,-1];
+
+//The different params for the length, radius, angles, etc. for the clown dimensions
 var clownParams = {
-  headRadius: 7,
-  earRadius: 2.5,
-  eyeRadius: 0.75,
-  noseRadius: 0.5,
-  mouthRadius: 0.85,
-  mouthTube: 0.35,
-  hatRadiusTop: 8,
-  hatRadiusBottom: 5,
-  hatLength: 10,
-  rimRadius: 10,
-  rimThickness: 1,
+  armLength: 12,
+  armRadius: 1.25,
+  armRotation: Math.PI/12,
+  basicMaterials: materials,
   bodyRadius: 10,
   bodyScaleY: 1.1,
-  sphereDetail: 50,
   cylinderDetail: 50,
-  torusDetail: 50,
-  legRadius: 1.25,
-  legLength: 10,
-  feetRadius: 3,
-  feetPhiStartAngle: Math.PI,
+  earRadius: 2.5,
+  eyeRadius: 0.75,
   feetPhiLength: Math.PI,
+  feetPhiStartAngle: Math.PI,
+  feetRadius: 3,
   feetThetaStartAngle: 3*Math.PI/2,
-  shoulderRadius: 3,
   handRadius: 2,
-  armRadius: 1.25,
-  armLength: 12,
-  basicMaterials: materials
+  hatLength: 10,
+  hatRadiusBottom: 5,
+  hatRadiusTop: 8,
+  headRadius: 7,
+  hipWidthPercent: 0.25,
+  hipHeightPercent: -0.9,
+  legLength: 10,
+  legRadius: 1.25,
+  mouthRadius: 0.85,
+  mouthTube: 0.35,
+  noseRadius: 0.5,
+  rimRadius: 10,
+  rimThickness: 1,
+  shoulderHeightPercent: 0.5,
+  shoulderRadius: 3,
+  shoulderWidthPercent: 0.95,
+  sphereDetail: 50,
+  torusDetail: 50
 };
 
 function createFeet(params) {
@@ -54,14 +64,34 @@ function createFeet(params) {
   return feet;
 }
 
-function createLeg(params) {
-  var leg = new THREE.Object3D();
+function addFeet(leg, params, side) {
+  var feet = createFeet(params);
+  feet.name = (side == 1 ? "right feet" : "left feet");
+  leg.add(feet);
+}
+
+function createLimb(params, limbType) {
+  var limb = new THREE.Object3D();
+  var radius = (limbType == "arm" ? params.armRadius : params.legRadius);
+  var length = (limbType == "arm" ? params.armLength : params.legLength);
   var cd = params.cylinderDetail || 20;
-  var legGeom = new THREE.CylinderGeometry(params.legRadius, params.legRadius, params.legLength, cd);
-  var legMesh = new THREE.Mesh(legGeom,  params.basicMaterials.legMaterial);
-  legMesh.position.y = -params.legLength/2;
-  leg.add(legMesh);
-  return leg;
+  var limbGeom = new THREE.CylinderGeometry(radius, radius, length, cd);
+  var limbMesh = new THREE.Mesh(limbGeom,  params.basicMaterials.legMaterial);
+  limbMesh.position.y = -length/2;
+  limb.add(limbMesh);
+  return limb;
+}
+
+function addLeg(clown, params, side) {
+  var leg = createLimb(params, 'leg');
+  leg.name = (side == 1 ? "right leg" : "left leg");
+  var radius = params.bodyRadius || 10;
+  var scale = params.bodyScaleY || 1.2;
+  var hx = params.hipWidthPercent * radius * side || side * radius * 0.25;
+  var hy = params.hipHeightPercent * scale * radius  || scale * radius * -0.9;
+  leg.position.set(hx, hy, 0);
+  clown.add(leg);
+  addFeet(leg, params, side);
 }
 
 function createHand(params) {
@@ -75,14 +105,18 @@ function createHand(params) {
   return hand;
 }
 
-function createArm(params) {
-  var arm = new THREE.Object3D();
-  var cd = params.cylinderDetail || 20;
-  var armGeom = new THREE.CylinderGeometry(params.armRadius, params.armRadius, params.armLength, cd);
-  var armMesh = new THREE.Mesh(armGeom,  params.basicMaterials.legMaterial);
-  armMesh.position.y = -params.armLength/2;
-  arm.add(armMesh);
-  return arm;
+function addHand(arm, params, side) {
+  var hand = createHand(params);
+  hand.name = (side == 1 ? "right hand" : "left hand");
+  arm.add(hand);
+}
+
+function addArm(shoulder, params, side) {
+  var arm = createLimb(params, 'arm');
+  arm.name = (side == 1 ? "right arm" : "left arm");
+  shoulder.add(arm);
+  arm.rotation.z = side * params.armRotation;
+  addHand(arm, params, side);
 }
 
 function createShoulder(params) {
@@ -94,34 +128,66 @@ function createShoulder(params) {
   return shoulder;
 }
 
-function createEar(params) {
-  var ear = new THREE.Object3D();
-  var sd = params.sphereDetail || 20;
-  var earGeom = new THREE.SphereGeometry(params.earRadius, sd, sd);
-  var earMesh = new THREE.Mesh(earGeom,  params.basicMaterials.faceMaterial);
-  ear.add(earMesh);
-  return ear;
+function addShoulder(clown, params, side) {
+  var shoulder = createShoulder(params);
+  shoulder.name = (side == 1 ? "right shoulder" : "left shoulder");
+  var radius = params.bodyRadius || 10;
+  var scale = params.bodyScaleY || 2;
+  var hx = side * radius * params.shoulderWidthPercent || side * radius * 0.95;
+  var hy = scale * radius * params.shoulderHeightPercent || scale * radius * 0.5;
+  shoulder.position.set(hx, hy, 0);
+  clown.add(shoulder);
+  addArm(shoulder, params, side);
 }
 
-function createEye(params) {
-  var eye = new THREE.Object3D();
+
+function createFaceParts(params, componentType) {
+  var faceObject = new THREE.Object3D();
   var sd = params.sphereDetail || 20;
-  var eyeGeom = new THREE.SphereGeometry(params.eyeRadius, sd, sd);
-  var eyeMesh = new THREE.Mesh(eyeGeom,  params.basicMaterials.faceMaterial);
-  eye.add(eyeMesh);
-  return eye;
+  var radius;
+  if (componentType == 'eye') {
+    radius = params.eyeRadius;
+  } else if (componentType == 'nose') {
+    radius = params.noseRadius;
+  } else {
+    radius = params.earRadius;
+  }
+  var facePartGeom = new THREE.SphereGeometry(radius, sd, sd);
+  var facePartMesh = new THREE.Mesh(facePartGeom,  params.basicMaterials.faceMaterial);
+  faceObject.add(facePartMesh);
+  return faceObject;
 }
 
-function createNose(params) {
-  var nose = new THREE.Object3D();
-  var sd = params.sphereDetail || 20;
-  var noseGeom = new THREE.SphereGeometry(params.noseRadius, sd, sd);
-  var noseMesh = new THREE.Mesh(noseGeom,  params.basicMaterials.faceMaterial);
-  nose.add(noseMesh);
-  return nose;
+function addEars(head, params, side) {
+  var ear = createFaceParts(params, 'ear');
+  ear.name = (side == 1 ? "right ear" : "left ear");
+  var radius = params.headRadius || 7;
+  var hx = side * radius * 0.95;
+  ear.position.set(hx, 0, 0);
+  head.add(ear);
+}
+
+function addEyes(head, params, side) {
+  //Adds eyes on the head on the right and left side
+  var eye = createFaceParts(params, 'eye');
+  eye.name = (side == 1 ? "right eye" : "left eye");
+  var radius = params.headRadius || 7;
+  var hx = side * radius * 0.35;
+  eye.position.set(hx, 0, radius);
+  head.add(eye);
+}
+
+function addNose(head, params) {
+  //Adds a nose to the head that is below the level of the eyes
+  var nose = createFaceParts(params, 'nose');
+  var radius = params.headRadius || 7;
+  var hy = radius * -0.15;
+  nose.position.set(0, hy, radius);
+  head.add(nose);
 }
 
 function createMouth(params) {
+  //Returns an object with the mouth as a torus that is only half a donut
   var mouth = new THREE.Object3D();
   var td = params.torusDetail || 20;
   var mouthGeom = new THREE.TorusGeometry(params.mouthRadius, params.mouthTube, td, td, Math.PI);
@@ -131,7 +197,18 @@ function createMouth(params) {
   return mouth;
 }
 
+function addMouth(head, params) {
+  //Adds mouth to head
+  var mouth = createMouth(params);
+  var radius = params.headRadius || 7;
+  var hy = radius * -0.45;
+  var hz = radius * 0.85;
+  mouth.position.set(0, hy, hz);
+  head.add(mouth);
+}
+
 function createHat(params) {
+  //Returns an object with the hat with a larger top radius than the bottom
   var hat = new THREE.Object3D();
   var cd = params.cylinderDetail || 20;
   var hatGeom = new THREE.CylinderGeometry(params.hatRadiusTop, params.hatRadiusBottom, params.hatLength, cd);
@@ -141,6 +218,7 @@ function createHat(params) {
 }
 
 function createRim(params) {
+  //Returns an object with the rim as a very thin cylinder
   var rim = new THREE.Object3D();
   var cd = params.cylinderDetail || 20;
   var rimGeometry = new THREE.CylinderGeometry(params.rimRadius, params.rimRadius, params.rimThickness, cd, cd);
@@ -149,102 +227,27 @@ function createRim(params) {
   return rim;
 }
 
-function addFeet(leg, params, side) {
-  var feet = createFeet(params);
-  feet.name = (side == 1 ? "right feet" : "left feet");
-  leg.add(feet);
-}
-
-function addLeg(clown, params, side) {
-  var leg = createLeg(params);
-  leg.name = (side == 1 ? "right leg" : "left leg");
-  var radius = params.bodyRadius || 10;
-  var scale = params.bodyScaleY || 1.2;
-  var hx = side * radius * 0.25;
-  var hy = scale * radius * -0.9;
-  leg.position.set(hx, hy, 0);
-  clown.add(leg);
-  addFeet(leg, params, side);
-}
-
-function addHand(arm, params, side) {
-  var hand = createHand(params);
-  hand.name = (side == 1 ? "right hand" : "left hand");
-  arm.add(hand);
-}
-
-function addArm(shoulder, params, side) {
-  var arm = createArm(params);
-  arm.name = (side == 1 ? "right arm" : "left arm");
-  shoulder.add(arm);
-  arm.rotation.z = side * Math.PI/12;
-  addHand(arm, params, side);
-}
-
-function addShoulder(clown, params, side) {
-  var shoulder = createShoulder(params);
-  shoulder.name = (side == 1 ? "right shoulder" : "left shoulder");
-  var radius = params.bodyRadius || 10;
-  var scale = params.bodyScaleY || 2;
-  var hx = side * radius * 0.95;
-  var hy = scale * radius * 0.5;
-  shoulder.position.set(hx, hy, 0);
-  clown.add(shoulder);
-  addArm(shoulder, params, side);
-}
-
-function addEars(head, params, side) {
-  var ear = createEar(params);
-  ear.name = (side == 1 ? "right ear" : "left ear");
-  var radius = params.headRadius || 7;
-  var hx = side * radius * 0.95;
-  ear.position.set(hx, 0, 0);
-  head.add(ear);
-}
-
-function addEyes(head, params, side) {
-  var eye = createEye(params);
-  eye.name = (side == 1 ? "right eye" : "left eye");
-  var radius = params.headRadius || 7;
-  var hx = side * radius * 0.35;
-  eye.position.set(hx, 0, radius);
-  head.add(eye);
-}
-
-function addNose(head, params) {
-  var nose = createNose(params);
-  var radius = params.headRadius || 7;
-  var hy = radius * -0.15;
-  nose.position.set(0, hy, radius);
-  head.add(nose);
-}
-
-function addMouth(head, params) {
-  var mouth = createMouth(params);
-  var radius = params.headRadius || 7;
-  var hy = radius * -0.45;
-  var hz = radius * 0.85;
-  mouth.position.set(0, hy, hz);
-  head.add(mouth);
-}
-
 function addHat(head, params) {
+  //Adds a hat with rim and hat body components
   var rim = createRim(params);
   var hat = createHat(params);
   var radius = params.headRadius || 7;
   var hx = radius * 0.25;
-  rim.position.set(0, radius*0.6, 0);
-  hat.position.set(hx, radius, 0);
+  var hy = radius * 0.6;
+  rim.position.set(0, hy, 0); //positions rim to be on top and covers a little of the head
+  hat.position.set(hx, radius, 0); //positions hat to be on top of the head
   head.add(rim);
-  head.add(hat);
-  // rim.rotation.x = Math.PI/2;
+  //Rotates rim to be slanted
   rim.rotation.z = -Math.PI/16;
   rim.rotation.y = -Math.PI/8;
-  hat.rotation.z = -Math.PI/8;
-  hat.rotation.y = Math.PI/4;
+  head.add(hat);
+  //Rotates hat to be slanted and match the rim
+  hat.rotation.z = -Math.PI/16;
+  hat.rotation.y = Math.PI/8;
 }
 
 function createBody(params) {
+  //Creates the body and adds legs, shoulders
   var body = new THREE.Object3D();
   var radius = params.bodyRadius || 3;
   var sd = params.sphereDetail || 20;
@@ -253,23 +256,28 @@ function createBody(params) {
   var bodyMesh = new THREE.Mesh(bodyGeom,  params.basicMaterials.bodyMaterial);
   bodyMesh.scale.y = scale;
   body.add(bodyMesh);
-  addLeg(body, params, 1);
-  addLeg(body, params, -1);
-  addShoulder(body, params, 1);
-  addShoulder(body, params, -1);
+
+  //Adds body components:
+  for (var i = 0; i < leftRight.length; i++) {
+    addLeg(body, params, leftRight[i]);
+    addShoulder(body, params, leftRight[i]);
+  }
   return body;
 }
 
 function createHead(params) {
+  //Creates the head and adds ears, eyes, nose, mouth and hat to the head
   var head = new THREE.Object3D();
   var sd = params.sphereDetail || 20;
   var headGeom = new THREE.SphereGeometry(params.headRadius, sd, sd);
   var headMesh = new THREE.Mesh(headGeom,  params.basicMaterials.headMaterial);
   head.add(headMesh);
-  addEars(head, params, 1);
-  addEars(head, params, -1);
-  addEyes(head, params, 1);
-  addEyes(head, params, -1);
+
+  //Adds head components (left and right for ears and eyes):
+  for (var i = 0; i < leftRight.length; i++) {
+    addEars(head, params, leftRight[i]);
+    addEyes(head, params, leftRight[i]);
+  }
   addNose(head, params);
   addMouth(head, params);
   addHat(head, params);
@@ -278,31 +286,39 @@ function createHead(params) {
 
 function clown() {
 
+  //Creates the clown object
   var clown = new THREE.Object3D();
+
+  //Calls createBody to make the clown body and adds it to clown object
   var body = createBody(clownParams);
   clown.add(body);
 
+  //Calls createHead to make clown head and then positions it on top of the clown body
   var head = createHead(clownParams);
   var bs = clownParams.bodyScaleY || 1.1;
   var br = clownParams.bodyRadius || 10;
   var hr = clownParams.headRadius || 7;
   head.position.y = bs*br + hr;
   clown.add(head);
-  clown.position.y = bs*br/2 + clownParams.legLength + clownParams.feetRadius*2;
 
-  //sets bounding box location
+  //Positions clown to have feet on origin
+  clown.position.y = clownParams.legLength - (br*bs*clownParams.hipHeightPercent) + clownParams.feetRadius/2;
+
+  //Sets bounding box location
   var boundingBox = {
     minx: -5, maxx: 5,
     miny: -10, maxy: 50,
     minz: -20, maxz: 20
   };
 
+  //Yelow sphere that marks the origin
   var geometry = new THREE.SphereGeometry( 1, 20, 20 );
   var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
   var sphere = new THREE.Mesh( geometry, material );
 
-  scene.add(sphere);
-  scene.add(clown);
+  scene.add(sphere); //add sphere to origin
+  scene.add(clown); // add clown to scene
+
   //initializes and sets up camera, scene, renderer, boundingBox
   TW.mainInit(renderer, scene);
   document.getElementById('clown').appendChild(renderer.domElement);
