@@ -54,6 +54,7 @@ var clownParams = {
 };
 
 function createFeet(params) {
+  //creates feet and positions it to the bottom of the leg
   var feet = new THREE.Object3D();
   var sd = params.sphereDetail || 20;
   var feetGeom = new THREE.SphereGeometry( params.feetRadius, sd, sd, params.feetPhiStartAngle, params.feetPhiLength, params.feetThetaStartAngle);
@@ -65,12 +66,14 @@ function createFeet(params) {
 }
 
 function addFeet(leg, params, side) {
+  //Adds feet to the bottom of the leg
   var feet = createFeet(params);
   feet.name = (side == 1 ? "right feet" : "left feet");
   leg.add(feet);
 }
 
 function createLimb(params, limbType) {
+  //Returns a limb object that is either an arm or leg, which determines length and radius
   var limb = new THREE.Object3D();
   var radius = (limbType == "arm" ? params.armRadius : params.legRadius);
   var length = (limbType == "arm" ? params.armLength : params.legLength);
@@ -83,6 +86,7 @@ function createLimb(params, limbType) {
 }
 
 function addLeg(clown, params, side) {
+  //Adds a left and right leg to the bottom of the body with it's position depending on hipWidth and hipHeight
   var leg = createLimb(params, 'leg');
   leg.name = (side == 1 ? "right leg" : "left leg");
   var radius = params.bodyRadius || 10;
@@ -91,35 +95,38 @@ function addLeg(clown, params, side) {
   var hy = params.hipHeightPercent * scale * radius  || scale * radius * -0.9;
   leg.position.set(hx, hy, 0);
   clown.add(leg);
-  addFeet(leg, params, side);
+  addFeet(leg, params, side); //adds feet to the leg
 }
 
 function createHand(params) {
+  //Returns an object with the hand as a sphere that is positioned to connect half a handRadius to the arm
   var hand = new THREE.Object3D();
   var sd = params.sphereDetail || 20;
   var handGeom = new THREE.SphereGeometry(params.handRadius, sd, sd);
   var handMesh = new THREE.Mesh(handGeom,  params.basicMaterials.feetMaterial);
-  handMesh.position.y = -5;
   handMesh.position.y = -(params.armLength + params.handRadius/2);
   hand.add(handMesh);
   return hand;
 }
 
 function addHand(arm, params, side) {
+  //Adds hand to the right and left side of the body by adding it to the arm object
   var hand = createHand(params);
   hand.name = (side == 1 ? "right hand" : "left hand");
   arm.add(hand);
 }
 
 function addArm(shoulder, params, side) {
+  //Adds arm to right and left side of the body by appending it to the shoulder object
   var arm = createLimb(params, 'arm');
   arm.name = (side == 1 ? "right arm" : "left arm");
   shoulder.add(arm);
   arm.rotation.z = side * params.armRotation;
-  addHand(arm, params, side);
+  addHand(arm, params, side); //adds hands to arm cylinders
 }
 
 function createShoulder(params) {
+  //Returns object with shoulder as a sphere
   var shoulder = new THREE.Object3D();
   var sd = params.sphereDetail || 20;
   var shoulderGeom = new THREE.SphereGeometry(params.shoulderRadius, sd, sd);
@@ -129,6 +136,7 @@ function createShoulder(params) {
 }
 
 function addShoulder(clown, params, side) {
+  //Adds shoulder to the clown body on the right and left side, and scales the shoulder position
   var shoulder = createShoulder(params);
   shoulder.name = (side == 1 ? "right shoulder" : "left shoulder");
   var radius = params.bodyRadius || 10;
@@ -137,11 +145,12 @@ function addShoulder(clown, params, side) {
   var hy = scale * radius * params.shoulderHeightPercent || scale * radius * 0.5;
   shoulder.position.set(hx, hy, 0);
   clown.add(shoulder);
-  addArm(shoulder, params, side);
+  addArm(shoulder, params, side); //adds arm to shoulder sphere
 }
 
 
 function createFaceParts(params, componentType) {
+  //Returns object that is a face part and has different radius depending on part
   var faceObject = new THREE.Object3D();
   var sd = params.sphereDetail || 20;
   var radius;
@@ -159,6 +168,7 @@ function createFaceParts(params, componentType) {
 }
 
 function addEars(head, params, side) {
+  //Adds ears on the right and left side of the head
   var ear = createFaceParts(params, 'ear');
   ear.name = (side == 1 ? "right ear" : "left ear");
   var radius = params.headRadius || 7;
