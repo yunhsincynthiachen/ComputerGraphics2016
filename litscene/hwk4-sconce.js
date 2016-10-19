@@ -1,12 +1,11 @@
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer();
-var lightAmbient, lightDirectional, lightSpotlight;
-var lighthelperSpotlight, lighthelperDirectional;
+var lightAmbient, lightDirectional, lightSpotlight, lightSpotlight2;
 
 var params = {
   'ambientLightOn': true,
   'directionalOn': true,
-  'spotlightOn': false
+  'spotlightOn': true
 };
 
 function makeLights() {
@@ -16,21 +15,24 @@ function makeLights() {
   }
 
   if (params.directionalOn) {
-    lightDirectional = new THREE.DirectionalLight(TW.WHITE, 1.5);
+    lightDirectional = new THREE.DirectionalLight(TW.WHITE, 1.3);
     lightDirectional.position.set(0.5, 1, 1);
     lightDirectional.castShadow = true;
     scene.add(lightDirectional);
   }
 
   if (params.spotlightOn) {
-    lightSpotlight = new THREE.SpotLight( TW.WHITE); // 50%
+    lightSpotlight = new THREE.SpotLight( TW.WHITE, 4, 200, Math.PI/6);
     lightSpotlight.position.set(-35, 10, -45);
-    // lightSpotlight.castShadow = true;
-    lightSpotlight.shadow.mapSize.width = 1;
-    lightSpotlight.shadow.mapSize.height = 1;
-
-    lightSpotlight.target.position.set(-35, -40, -40);
+    lightSpotlight.target.position.set(-35, -50, -47);
+    lightSpotlight.target.updateMatrixWorld();
     scene.add(lightSpotlight);
+
+    lightSpotlight2 = new THREE.SpotLight( TW.WHITE, 4, 200, Math.PI/6);
+    lightSpotlight2.position.set(-35, 10, -45);
+    lightSpotlight2.target.position.set(-35, 50, -47);
+    lightSpotlight2.target.updateMatrixWorld();
+    scene.add(lightSpotlight2);
   }
 }
 
@@ -38,6 +40,7 @@ function redo() {
   scene.remove(lightAmbient);
   scene.remove(lightDirectional);
   scene.remove(lightSpotlight);
+  scene.remove(lightSpotlight2);
   makeLights();
   TW.render();
 }
