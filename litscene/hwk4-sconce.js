@@ -56,17 +56,17 @@ function redo() {
 
 //createSconce: creates cone geometry with lambert material (either flipped or not)
 function createSconce(isFlipped) {
-  var sconce = new THREE.ConeGeometry(5, 8, 100, 100, true);
+  var sconce = new THREE.ConeGeometry(5, 8, 100, 100, true); //openBottom
   var sconceMaterial = new THREE.MeshLambertMaterial({color: 0x5e5e57});
   var sconceMesh = new THREE.Mesh(sconce, sconceMaterial);
   sconceMesh.castShadow = true;
   sconceMesh.position.x = -35;
-  sconceMesh.position.y = 10-8/2;
+  sconceMesh.position.y = 10-8/2; //offsets to shift origin to tip of the cone
   sconceMesh.position.z = -45;
 
   if (isFlipped) {
-    sconceMesh.position.y = 10+8/2;
-    sconceMesh.rotation.z = Math.PI;
+    sconceMesh.position.y = 10+8/2; //offsets to shift origin to tip of the cone
+    sconceMesh.rotation.z = Math.PI; //rotates sconce for the creation of the flipped sconce
   }
   scene.add(sconceMesh);
 }
@@ -109,9 +109,9 @@ function createRoom() {
   var room = new THREE.Mesh(roomGeometry, roomMaterial);
   scene.add(room);
 
-  createSphere();
-  createSconce(false);
-  createSconce(true);
+  createSphere(); //creates sphere ball
+  createSconce(false); //creates a sconce with cone bottom towards the floor
+  createSconce(true); //creates a sconce with cone bottom towards the ceiling
 
   document.getElementById('room').appendChild(renderer.domElement);
 
