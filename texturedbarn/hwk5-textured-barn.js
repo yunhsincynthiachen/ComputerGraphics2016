@@ -8,7 +8,7 @@ scene.background = new THREE.Color( 0xffffff ); //Sets background of scene to be
 
 var barn, lightAmbient, lightDirectional; //Initializes the three scene objects that we will want to set and remove
 
-//The main param is the different modes that you can set (I have three modes implemented: the two required and the textures one)
+//The main param is the different modes that you can sfet (I have three modes implemented: the two required and the textures one)
 var params = {
   mode: 'showResult',
   directionalLightIntensity: 0.6,
@@ -69,7 +69,7 @@ function addLighting() {
   scene.add(lightAmbient);
 }
 
-//Gets invoked by createBarnResult to update the top face in the front and back
+//Gets invoked by createBarnResult to update the top face (upper triangle) in the front and back
 //for the material to follow same pattern as the other faces
 function updateTextureCoords(barnGeom) {
     var faceVertexUvs = barnGeom.faceVertexUvs[0];

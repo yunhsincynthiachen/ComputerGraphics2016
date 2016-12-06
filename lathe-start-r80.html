@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <title>Draw Points</title>
+    <style>
+      /* feel free to style the canvas any way you want. If you want it to
+      use the entire window, set width: 100% and height: 100%. */
+
+      body { margin: 0px; padding: 0px }
+
+      canvas {
+          display: block;
+          width: 100%;
+          height: 100%;
+      }
+    </style>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/three-r80.min.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js"></script>
+  </head>
+<body>
+
+<script>
+
+var scene = new THREE.Scene();
+var renderer = new THREE.WebGLRenderer();
+
+TW.mainInit(renderer,scene);
+
+var example = [ [3, 0],
+                [3, 5],
+                [5, 6],
+                [5, 7],
+                [5, 8],
+                [3, 9],
+                [0, 10]];
+
+function printPoints(points) {
+    var i;
+    console.log("[");
+    for( i=0; i < points.length; i++) {
+        p = points[i];
+        console.log("["+p.x+","+p.y+"],");
+    }
+    console.log("]");
+}
+
+function makeVertices(points) {
+    var i;
+    var pts = [];
+    for( i = 0; i < points.length; i++) {
+        var p = points[i];
+        pts.push(new THREE.Vector3( p[0], p[1], 0));
+    }
+    return pts;
+}
+
+var splineObj;
+
+function remakeSplineObj() {
+    scene.remove(splineObj);
+    var mat = new THREE.MeshBasicMaterial( {color: 0x0000FF} );
+    curve = new THREE.SplineCurve3 ( makeVertices(example) );
+    var geom = new THREE.Geometry();
+    geom.vertices = curve.getPoints(5);
+    splineObj = new THREE.Line( geom, new THREE.LineBasicMaterial( { linewidth: 3, color: 0x00ff00 }) );
+    splineObj.name = "spline";
+    scene.add(splineObj);
+}
+remakeSplineObj();
+
+var latheObj;
+
+function remakeLatheObj() {
+    scene.remove(latheObj);
+    var geom = new THREE.LatheGeometry( splineObj.geometry.vertices );
+    var mat1 = new THREE.MeshNormalMaterial({color: 0xFF0000,
+                                             opacity: 0.6,
+                                             side: THREE.DoubleSide,
+                                             wireframe: false});
+    latheObj = new THREE.Mesh (geom, mat1);
+    latheObj.name = "lathe";
+    scene.add(latheObj);
+}
+// remakeLatheObj();
+
+function addSphereAt(pt) {
+    var sph = new THREE.Mesh( new THREE.SphereGeometry(0.5),
+                              new THREE.MeshBasicMaterial({color:0x00FF00}));
+    sph.position.copy(pt);
+    scene.add(sph);
+    return sph;
+}
+
+function addAllCP() {
+    var pts = makeVertices(example);
+    for( var i = 0; i < pts.length; i++ ) {
+        addSphereAt(pts[i]);
+    }
+}
+addAllCP();
+
+var cameraFOVY = 75;
+
+var state = TW.cameraSetup(renderer,
+                           scene,
+                           {minx: -6, maxx: 6,
+                            miny: 0, maxy: 6,
+                            minz: -6, maxz: 6},
+                           cameraFOVY);
+
+TW.render();
+
+</script>
+
+
+</body>
+</html>

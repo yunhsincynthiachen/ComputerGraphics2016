@@ -113,6 +113,22 @@ function createRoom() {
   createSconce(false); //creates a sconce with cone bottom towards the floor
   createSconce(true); //creates a sconce with cone bottom towards the ceiling
 
+  // var torusGeom = new THREE.TorusGeometry(10, 3, 16, 100 );
+  // var torusMesh = new THREE.Mesh(torusGeom);
+  // torusMesh.position.set(0, 10 + 3, 0);
+  // scene.add(torusMesh);
+  //
+  // var eye = new THREE.Vector3(0, 100, 0);
+  // var at = new THREE.Vector3(0,0,0);
+  // var up = new THREE.Vector3(0,1,0);
+  //
+  // var camera = new THREE.PerspectiveCamera(75, 1000/600, 1, 1000);
+  // camera.position.copy(eye);
+  // camera.up.copy(up);
+  // camera.lookAt(at);
+  //
+  // renderer.render(scene, camera);
+
   document.getElementById('room').appendChild(renderer.domElement);
 
   var state = TW.cameraSetup(renderer,

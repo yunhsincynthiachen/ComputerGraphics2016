@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Mikey Demo</title>
+    <style>
+      canvas {
+          display: block;
+          margin: 10px auto;
+          width: 800px;
+          height: 500px;
+          border: 2px solid teal;
+      }
+    </style>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/three.min.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/tw.js"></script>
+    <script src="https://cs.wellesley.edu/~cs307/threejs/libs/dat.gui.min.js"></script>
+    <script type="text/javascript" src="./ThreeBSP.js"></script>
+    <script type="text/javascript" src="./mikey.js"/></script>
+  </head>
+
+  <body>
+    <script>
+      //Initializes scene and renderer
+      var scene = new THREE.Scene();
+      var renderer = new THREE.WebGLRenderer();
+
+      //addLight(): adds point light and ambient light to the scene
+      function addLight() {
+        var light = new THREE.PointLight(0xFFFFFF, 1, 0);
+        light.position.set(0, 0, 100);
+        scene.add(light);
+
+        var lightAmbient = new THREE.AmbientLight(0x696969);
+        scene.add(lightAmbient);
+      }
+
+      TW.mainInit(renderer,scene); //initializes scene and renderer
+
+      createMikey(scene); //adds mike wazowski to scene
+      addLight(); //adds ambient and point light to scene
+
+      var state = TW.cameraSetup(renderer,
+                                 scene,
+                                 {minx: -50, maxx: 50,
+                                  miny: -50, maxy: 50,
+                                  minz: -50, maxz: 50});
+
+    </script>
+  </body>
+</html>

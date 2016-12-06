@@ -4,13 +4,13 @@ var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer();
 
 var cameraParams = {
-  fov: 90,
-  aspectRatio: 800/500,
+  fov: 75,
+  aspectRatio: 1000/600,
   near: 1,
-  far: 200,
+  far: 1000,
   eyex: 0,
-  eyey: 0,
-  eyez: 30,
+  eyey: 100,
+  eyez: 0,
   upx: 0,
   upy: 1,
   upz: 0,
@@ -98,7 +98,16 @@ function cameraangles() {
   var wireBarn = TW.createWireBarn(10,10,20);
   scene.add(wireBarn);
 
-  var camera = setupCamera(scene);
+  var eye = new THREE.Vector3(0, 100, 0);
+  var at = new THREE.Vector3(0, 0, 0);
+  var up = new THREE.Vector3(0, 1, 0);
+  camera = new THREE.PerspectiveCamera( 75, 1000/600, 1, 1000);
+  camera.position.copy(eye);
+  camera.up.copy(up);
+  camera.lookAt(at);
+  scene.add(camera);
+
+  // var camera = setupCamera(scene);
 
   //initializes and sets up camera, scene, renderer, boundingBox
   TW.mainInit(renderer, scene);
