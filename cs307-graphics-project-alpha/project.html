@@ -19,34 +19,42 @@
 
   <body>
 
-    <div class="navbar-collapse collapse inverse" id="navbar-header">
+    <!-- <div class="navbar-collapse collapse inverse" id="navbar-header">
       <div class="container-fluid">
         <div class="about">
           <h4>About Me</h4>
           <p class="text-muted">Info about me</p>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="navbar navbar-static-top navbar-dark bg-inverse">
       <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header" aria-expanded="false" aria-label="Toggle navigation"></button>
+        <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header" aria-expanded="false" aria-label="Toggle navigation"></button> -->
         <a href="#" class="navbar-brand">CS 307 Final Project: Cynthia Chen</a>
       </div>
     </div>
 
     <section class="jumbotron text-xs-center">
       <div class="container">
-        <h1 class="jumbotron-heading">Album example</h1>
+        <h1 class="jumbotron-heading">Monsters Inc. Scene</h1>
         <p class="lead text-muted">
-          Info about the Final Project.Have tons of information here about the project.
-          "Simple web page describing your project.
-          Your web page must have still pictures of the project (take some screen shots and make image files),
-          converting them to PNG for display on a web page of your creation, describing project."
+          For my final project, I created an animated scene, similar to the one where Mike and Sulley are stuck
+          and chased in the door warehouse, where they are riding and hopping between doors that are moving. In my
+          scene, I don't have Sulley, but I have Mike attached to a door, screaming as the door rides down the helix.
+          <br>
+          <a href="FinalProjectDemo/finaldemo.html">Link to final demo</a>
+          <br>
+          <br>
+          My goals for the scene were to use the following concepts we learned in class:
         </p>
         <ul class="list-group">
-          <li class="list-group-item">Project Goal 1</li>
-          <li class="list-group-item">Project Goal 2</li>
-          <li class="list-group-item">Project Goal 3</li>
+          <li class="list-group-item">&bull; Realistic Modeling of Mike</li>
+          <li class="list-group-item">&bull; Realistic Modeling of the Classic Monsters Inc. Door</li>
+          <li class="list-group-item">&bull; Incorporate Material, Lighting and Shading</li>
+          <li class="list-group-item">&bull; Have Camera Position Move during Animation</li>
+          <li class="list-group-item">&bull; Create Challenging Curved Lines and Surfaces</li>
+          <li class="list-group-item">&bull; Incorporate Textures and texture-mapping</li>
+          <li class="list-group-item">&bull; Animation with Ability of User Interaction for the Moving Door and Screaming Mike</li>
         </ul>
       </div>
     </section>
@@ -54,21 +62,61 @@
   <section>
     <div class="album text-muted">
       <h1 class="text-xs-center">Still Pictures of Project</h1>
+      <br>
       <div class="container">
         <div class="row">
+          <h2>Modeling Mike Wazowski</h2>
           <div class="card">
-            <img data-src="holder.js/100px280/thumb" alt="Card image cap">
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            <img class="images" src="images/mikeyOld.png" alt="Card image cap">
+            <p class="card-text">Previous model of Mike from the creative scene assignment.</p>
           </div>
           <div class="card">
-            <img data-src="holder.js/100px280/thumb" alt="Card image cap">
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            <br>
+            <br>
+            <br>
+            <br>
+            <img class="images" src="images/arrow.png" alt="Card image cap">
           </div>
           <div class="card">
-            <img data-src="holder.js/100px280/thumb" alt="Card image cap">
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            <img class="images" src="images/mikeyNew.png" alt="Card image cap">
+            <p class="card-text">New model of Mike with more detail, such as his mouth, limbs and horns.</p>
           </div>
-
+          <p>Initially, when I had made Mike, I just wanted to get his general shape, color and eye down, so that
+          it would be distinguisable who I was trying to model after. For the final project, I wanted to be more
+          precise in his features and create the necessary curves and shapes to make his body parts more defined,
+          especially when it came to his mouth, limbs, horns and even head shape, as well as the placement of the features.</p>
+      </div>
+      <div class="row">
+        <h2>Modeling the Door</h2>
+        <div class="card">
+        </div>
+        <div class="card">
+          <img class="images" height="450" src="images/doorModel.png" alt="Card image cap">
+        </div>
+        <div class="card">
+        </div>
+        <br>
+        <p>The door model includes a frame, blinker, door, door knob and hanger rod. The frame has a metal texture-mapped
+        onto a phong material, and the door has a door image texture-mapped onto both sides of a rectangular box of phong
+        material.</p>
+    </div>
+      <div class="row">
+      <h2>Animating Mike Wazowski's Scream</h2>
+        <div class="card">
+          <img data-src="holder.js/100px280/thumb" alt="Card image cap">
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+        <div class="card">
+          <img data-src="holder.js/100px280/thumb" alt="Card image cap">
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+        <div class="card">
+          <img data-src="holder.js/100px280/thumb" alt="Card image cap">
+          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+      </div>
+      <div class="row">
+        <h2>Animating Movement of the Door</h2>
           <div class="card">
             <img data-src="holder.js/100px280/thumb" alt="Card image cap">
             <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -82,7 +130,21 @@
             <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
           </div>
         </div>
-
+        <div class="row">
+          <h2>Camera Movement During Animation</h2>
+            <div class="card">
+              <img data-src="holder.js/100px280/thumb" alt="Card image cap">
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            </div>
+            <div class="card">
+              <img data-src="holder.js/100px280/thumb" alt="Card image cap">
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            </div>
+            <div class="card">
+              <img data-src="holder.js/100px280/thumb" alt="Card image cap">
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+            </div>
+        </div>
       </div>
     </div>
   </section>

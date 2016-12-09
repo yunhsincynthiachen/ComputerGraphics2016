@@ -54,7 +54,7 @@ body {
 }
 
 .jumbotron .container {
-  max-width: 40rem;
+  max-width: 50rem;
 }
 
 .album {
@@ -65,14 +65,17 @@ body {
 }
 
 .card {
+  background-color: #f7f7f7;
   float: left;
   width: 33.333%;
+  height: 100%;
   padding: .75rem;
   margin-bottom: 2rem;
   border: 0;
 }
 
 .card > img {
+  background-color: #f7f7f7;
   margin-bottom: .75rem;
 }
 
@@ -87,4 +90,8 @@ footer {
 
 footer p {
   margin-bottom: .25rem;
+}
+
+.images {
+  width: 100%;
 }

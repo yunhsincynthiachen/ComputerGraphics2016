@@ -1,15 +1,15 @@
 var loader = new THREE.TextureLoader(); //Initializes three.js textureLoader to obtain image textures
 
 var params = {
-  doorWidth: 30,
-  doorHeight: 65,
+  doorWidth: 60,
+  doorHeight: 100,
   doorDepth: 2,
-  frameWidth: 34,
-  frameHeight: 70,
+  frameWidth: 64,
+  frameHeight: 105,
   frameDepth: 6,
   widthHeightSegments: 50,
   hookRadius: 2,
-  hookLength: 20,
+  hookLength: 30,
   options: {
     amount: 4,
     bevelEnabled: true,
@@ -18,6 +18,12 @@ var params = {
     bevelSize: 1,
     bevelThickness: 1
   }
+}
+
+var doorMesh;
+
+function changeDoorPosition(x,y,z) {
+  doorMesh.position.set(x, y-(params.frameHeight/2+params.hookLength), z);
 }
 
 //Master function to create monsters inc doors. Adds object to scene after textures are loaded
@@ -65,7 +71,7 @@ function createMonIncDoor(scene, filename, x, y, z, rx, ry, rz) {
     frameShape.moveTo(x,-y);
     frameShape.lineTo(x,y);
     frameShape.lineTo(x,y+params.frameHeight/13);
-    frameShape.lineTo(x+params.frameWidth/4, y+5);
+    frameShape.lineTo(x+params.frameWidth/4, y+params.frameHeight/13);
     frameShape.bezierCurveTo(x+params.frameWidth/4, y+params.frameHeight/13, x+params.frameWidth/2, y+params.frameHeight/4, x+params.frameWidth*3/4, y+params.frameHeight/13);
     frameShape.lineTo(x+params.frameWidth, y+params.frameHeight/13);
     frameShape.lineTo(x+params.frameWidth, -y);
@@ -174,7 +180,7 @@ function createMonIncDoor(scene, filename, x, y, z, rx, ry, rz) {
                                               params.widthHeightSegments,
                                               params.widthHeightSegments);
 
-    var	doorMesh = new THREE.Mesh( doorGeom, doorMaterials.doorTexture );
+    doorMesh = new THREE.Mesh( doorGeom, doorMaterials.doorTexture );
 
     doorMesh.add(createFrame());
     doorMesh.add(createBlinker());
